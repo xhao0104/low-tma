@@ -38,30 +38,69 @@
                     <StackPanel VerticalAlignment="Center">
                         <TextBlock Text="工业温度监控系统" FontSize="18" FontWeight="Bold"
                                    Foreground="{StaticResource TextPrimaryBrush}"/>
-                        <TextBlock Text="Modbus RTU over TCP  ·  塔石双路透传" FontSize="11"
+                        <TextBlock Text="Modbus RTU over TCP  ·  多通道动态配置" FontSize="11"
                                    Foreground="{StaticResource TextMutedBrush}" Margin="0,2,0,0"/>
                     </StackPanel>
                 </StackPanel>
 
-                <!-- 右侧双路连接状态 -->
-                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal"
-                            VerticalAlignment="Center" HorizontalAlignment="Right">
-                    <!-- 通道 1 状态 -->
-                    <StackPanel Orientation="Horizontal" Margin="0,0,16,0">
-                        <TextBlock Text="COM1:" FontSize="11" Foreground="{StaticResource TextMutedBrush}"
-                                   VerticalAlignment="Center" Margin="0,0,4,0"/>
-                        <TextBlock Text="{Binding Ch1StatusText}" FontSize="13" FontWeight="SemiBold"
-                                   Foreground="{Binding Ch1Connected, Converter={StaticResource ConnStatusColorConv}}"
-                                   VerticalAlignment="Center"/>
-                    </StackPanel>
-                    <!-- 通道 2 状态 -->
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="COM2:" FontSize="11" Foreground="{StaticResource TextMutedBrush}"
-                                   VerticalAlignment="Center" Margin="0,0,4,0"/>
-                        <TextBlock Text="{Binding Ch2StatusText}" FontSize="13" FontWeight="SemiBold"
-                                   Foreground="{Binding Ch2Connected, Converter={StaticResource ConnStatusColorConv}}"
-                                   VerticalAlignment="Center"/>
-                    </StackPanel>
+                <!-- 右侧：模式切换与通道连接状态 -->
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
+                    <ItemsControl ItemsSource="{Binding Channels}" VerticalAlignment="Center" Margin="0,0,16,0">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,16,0">
+                                    <TextBlock Text="{Binding Name, StringFormat='{}{0}:'}"
+                                               FontSize="11" Foreground="{StaticResource TextMutedBrush}"
+                                               VerticalAlignment="Center" Margin="0,0,4,0"/>
+                                    <TextBlock Text="{Binding StatusText}" FontSize="13" FontWeight="SemiBold"
+                                               Foreground="{Binding Connected, Converter={StaticResource ConnStatusColorConv}}"
+                                               VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <ToggleButton IsChecked="{Binding IsAdvancedMode}"
+                                  Content="⚙️ 高级调试模式"
+                                  Padding="12,6" FontSize="12" FontWeight="Bold"
+                                  Cursor="Hand">
+                        <ToggleButton.Style>
+                            <Style TargetType="ToggleButton">
+                                <Setter Property="Background" Value="Transparent"/>
+                                <Setter Property="Foreground" Value="{StaticResource TextMutedBrush}"/>
+                                <Setter Property="BorderBrush" Value="{StaticResource CardBorderBrush}"/>
+                                <Setter Property="BorderThickness" Value="1"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="ToggleButton">
+                                            <Border Background="{TemplateBinding Background}"
+                                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                                    CornerRadius="4">
+                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="{TemplateBinding Padding}"/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#2A3A5A"/>
+                                    </Trigger>
+                                    <Trigger Property="IsChecked" Value="True">
+                                        <Setter Property="Background" Value="#FF00A8FF"/>
+                                        <Setter Property="Foreground" Value="White"/>
+                                        <Setter Property="BorderThickness" Value="0"/>
+                                        <Setter Property="Content" Value="👀 退出调试模式"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ToggleButton.Style>
+                    </ToggleButton>
                 </StackPanel>
             </DockPanel>
         </Border>
@@ -69,127 +108,133 @@
         <!-- ===== 主内容区 ===== -->
         <Grid Grid.Row="1" Margin="8">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="260"/>
+                <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <!-- ===== 左侧面板：双路连接配置 ===== -->
-            <Border Grid.Column="0" Style="{StaticResource CardStyle}">
+            <!-- ===== 左侧：动态通道配置列表 ===== -->
+            <Border Grid.Column="0" Width="260" Style="{StaticResource CardStyle}"
+                    Visibility="{Binding IsAdvancedMode, Converter={StaticResource BoolToVisConv}}">
                 <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                     <StackPanel>
-                        <TextBlock Text="📡 连接配置" Style="{StaticResource TitleStyle}" Margin="0,0,0,14"/>
+                        <DockPanel Margin="0,0,0,14">
+                            <TextBlock Text="📡 连接配置" Style="{StaticResource TitleStyle}" VerticalAlignment="Center" DockPanel.Dock="Left"/>
+                            <Button Content="➕ 新增" Command="{Binding AddNewChannelCommand}" 
+                                    Style="{StaticResource SmallButton}" HorizontalAlignment="Right" Padding="8,4" Cursor="Hand"/>
+                        </DockPanel>
 
-                        <!-- ===== 通道 1（COM1）===== -->
-                        <Border Padding="10,8" Margin="0,0,0,12"
-                                Background="#1A3A5C" CornerRadius="6"
-                                BorderBrush="#2A4A7A" BorderThickness="1">
-                            <StackPanel>
-                                <TextBlock Text="🔌 通道 1 — COM1" FontSize="12" FontWeight="SemiBold"
-                                           Foreground="#60A0FF" Margin="0,0,0,8"/>
+                        <!-- 动态渲染每个通道配置卡片 -->
+                        <ItemsControl ItemsSource="{Binding Channels}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <!-- 通道配置卡片 -->
+                                    <Border Padding="10,8" Margin="0,0,0,12"
+                                            CornerRadius="6" BorderThickness="1">
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <Setter Property="Background"  Value="#1A2A4A"/>
+                                                <Setter Property="BorderBrush" Value="#2A3A6A"/>
+                                                <Style.Triggers>
+                                                    <!-- 偶数通道用绿色系 -->
+                                                    <DataTrigger Binding="{Binding ChannelIndex}" Value="1">
+                                                        <Setter Property="Background"  Value="#1A3A2C"/>
+                                                        <Setter Property="BorderBrush" Value="#2A6A3A"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+                                        <StackPanel>
+                                            <!-- 通道标题 -->
+                                            <DockPanel Margin="0,0,0,8">
+                                                <Button DockPanel.Dock="Right" Content="🗑️" 
+                                                        Command="{Binding RemoveCommand}"
+                                                        Background="Transparent" BorderThickness="0"
+                                                        Foreground="{StaticResource TextMutedBrush}"
+                                                        ToolTip="删除此通道配置" Padding="6,0" Cursor="Hand" VerticalAlignment="Center"/>
+                                                
+                                                <TextBlock FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center">
+                                                    <TextBlock.Style>
+                                                        <Style TargetType="TextBlock">
+                                                            <Setter Property="Text" Value="{Binding Name, StringFormat='🔌 通道 — {0}'}"/>
+                                                            <Setter Property="Foreground" Value="#60A0FF"/>
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding ChannelIndex}" Value="1">
+                                                                    <Setter Property="Foreground" Value="#40C080"/>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </TextBlock.Style>
+                                                </TextBlock>
+                                            </DockPanel>
 
-                                <!-- IP -->
-                                <StackPanel Margin="0,0,0,6">
-                                    <TextBlock Text="IP 地址" Style="{StaticResource LabelStyle}"/>
-                                    <TextBox Style="{StaticResource DarkTextBox}"
-                                             Text="{Binding Ip1, UpdateSourceTrigger=PropertyChanged}"/>
-                                </StackPanel>
+                                            <!-- IP -->
+                                            <StackPanel Margin="0,0,0,6">
+                                                <TextBlock Text="IP 地址" Style="{StaticResource LabelStyle}"/>
+                                                <TextBox Style="{StaticResource DarkTextBox}"
+                                                         Text="{Binding Ip, UpdateSourceTrigger=PropertyChanged}"/>
+                                            </StackPanel>
 
-                                <!-- 端口 -->
-                                <StackPanel Margin="0,0,0,6">
-                                    <TextBlock Text="TCP 端口" Style="{StaticResource LabelStyle}"/>
-                                    <TextBox Style="{StaticResource DarkTextBox}"
-                                             Text="{Binding Port1, UpdateSourceTrigger=PropertyChanged}"/>
-                                </StackPanel>
+                                            <!-- 端口 -->
+                                            <StackPanel Margin="0,0,0,6">
+                                                <TextBlock Text="TCP 端口" Style="{StaticResource LabelStyle}"/>
+                                                <TextBox Style="{StaticResource DarkTextBox}"
+                                                         Text="{Binding PortText, UpdateSourceTrigger=PropertyChanged}"/>
+                                            </StackPanel>
 
-                                <!-- 从站地址 -->
-                                <StackPanel Margin="0,0,0,8">
-                                    <TextBlock Text="从站地址" Style="{StaticResource LabelStyle}"/>
-                                    <TextBox Style="{StaticResource DarkTextBox}"
-                                             Text="{Binding SlaveAddr1, UpdateSourceTrigger=PropertyChanged}"/>
-                                </StackPanel>
+                                            <!-- 从站地址（逗号分隔，支持多台）-->
+                                            <StackPanel Margin="0,0,0,8">
+                                                <TextBlock Text="从站地址（逗号分隔）" Style="{StaticResource LabelStyle}"/>
+                                                <TextBox Style="{StaticResource DarkTextBox}"
+                                                         Text="{Binding SlavesText, UpdateSourceTrigger=PropertyChanged}"/>
+                                            </StackPanel>
 
-                                <!-- 连接按钮 -->
-                                <Button Content="{Binding Ch1ButtonText}"
-                                        Command="{Binding ConnectCh1Command}"
-                                        HorizontalAlignment="Stretch">
-                                    <Button.Style>
-                                        <Style TargetType="Button" BasedOn="{StaticResource PrimaryButton}">
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding Ch1Connected}" Value="True">
-                                                    <Setter Property="Background">
-                                                        <Setter.Value>
-                                                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                                                <GradientStop Color="#FFCC2936" Offset="0"/>
-                                                                <GradientStop Color="#FFFF3535" Offset="1"/>
-                                                            </LinearGradientBrush>
-                                                        </Setter.Value>
-                                                    </Setter>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Button.Style>
-                                </Button>
-                            </StackPanel>
-                        </Border>
+                                            <!-- 连接 / 断开按钮 -->
+                                            <Button Content="{Binding ButtonText}"
+                                                    Command="{Binding ToggleCommand}"
+                                                    HorizontalAlignment="Stretch" Margin="0,0,0,4">
+                                                <Button.Style>
+                                                    <Style TargetType="Button" BasedOn="{StaticResource PrimaryButton}">
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding Connected}" Value="True">
+                                                                <Setter Property="Background">
+                                                                    <Setter.Value>
+                                                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                                                            <GradientStop Color="#FFCC2936" Offset="0"/>
+                                                                            <GradientStop Color="#FFFF3535" Offset="1"/>
+                                                                        </LinearGradientBrush>
+                                                                    </Setter.Value>
+                                                                </Setter>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Button.Style>
+                                            </Button>
 
-                        <!-- ===== 通道 2（COM2）===== -->
-                        <Border Padding="10,8" Margin="0,0,0,12"
-                                Background="#1A3A2C" CornerRadius="6"
-                                BorderBrush="#2A6A3A" BorderThickness="1">
-                            <StackPanel>
-                                <TextBlock Text="🔌 通道 2 — COM2" FontSize="12" FontWeight="SemiBold"
-                                           Foreground="#40C080" Margin="0,0,0,8"/>
+                                            <!-- 保存配置按钮 -->
+                                            <Button Content="💾 保存配置"
+                                                    Command="{Binding SaveCommand}"
+                                                    HorizontalAlignment="Stretch"
+                                                    Style="{StaticResource SmallButton}"
+                                                    Padding="0,4"/>
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
 
-                                <!-- IP -->
-                                <StackPanel Margin="0,0,0,6">
-                                    <TextBlock Text="IP 地址" Style="{StaticResource LabelStyle}"/>
-                                    <TextBox Style="{StaticResource DarkTextBox}"
-                                             Text="{Binding Ip2, UpdateSourceTrigger=PropertyChanged}"/>
-                                </StackPanel>
-
-                                <!-- 端口 -->
-                                <StackPanel Margin="0,0,0,6">
-                                    <TextBlock Text="TCP 端口" Style="{StaticResource LabelStyle}"/>
-                                    <TextBox Style="{StaticResource DarkTextBox}"
-                                             Text="{Binding Port2, UpdateSourceTrigger=PropertyChanged}"/>
-                                </StackPanel>
-
-                                <!-- 从站地址 -->
-                                <StackPanel Margin="0,0,0,8">
-                                    <TextBlock Text="从站地址" Style="{StaticResource LabelStyle}"/>
-                                    <TextBox Style="{StaticResource DarkTextBox}"
-                                             Text="{Binding SlaveAddr2, UpdateSourceTrigger=PropertyChanged}"/>
-                                </StackPanel>
-
-                                <!-- 连接按钮 -->
-                                <Button Content="{Binding Ch2ButtonText}"
-                                        Command="{Binding ConnectCh2Command}"
-                                        HorizontalAlignment="Stretch">
-                                    <Button.Style>
-                                        <Style TargetType="Button" BasedOn="{StaticResource PrimaryButton}">
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding Ch2Connected}" Value="True">
-                                                    <Setter Property="Background">
-                                                        <Setter.Value>
-                                                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                                                <GradientStop Color="#FF207050" Offset="0"/>
-                                                                <GradientStop Color="#FF30C070" Offset="1"/>
-                                                            </LinearGradientBrush>
-                                                        </Setter.Value>
-                                                    </Setter>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Button.Style>
-                                </Button>
-                            </StackPanel>
-                        </Border>
-
-                        <!-- 一键连接两路 -->
-                        <Button Content="⚡ 一键连接两路"
+                        <!-- 一键连接所有通道 -->
+                        <Button Content="⚡ 一键连接所有通道"
                                 Command="{Binding ConnectAllCommand}"
                                 HorizontalAlignment="Stretch"
                                 Style="{StaticResource PrimaryButton}"
+                                Margin="0,0,0,6"/>
+
+                        <!-- 一键断开所有通道 -->
+                        <Button Content="⛔ 断开所有通道"
+                                Command="{Binding DisconnectAllCommand}"
+                                HorizontalAlignment="Stretch"
+                                Style="{StaticResource SmallButton}"
+                                Padding="0,6"
                                 Margin="0,0,0,14"/>
 
                         <!-- 分隔线 -->
@@ -204,32 +249,34 @@
                             <LineBreak/>
                             <Run Text="寄存器: 40001 ~ 40013"/>
                             <LineBreak/>
-                            <Run Text="两路独立 TCP，互不影响"/>
+                            <Run Text="配置文件: settings.json（exe 同目录）"/>
                         </TextBlock>
                     </StackPanel>
                 </ScrollViewer>
             </Border>
 
-            <!-- ===== 右侧面板：设备仪表盘 ===== -->
-            <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto"
+            <!-- ===== 右侧：所有设备仪表盘（动态，WrapPanel）===== -->
+            <ScrollViewer Grid.Column="1"
+                          VerticalScrollBarVisibility="Auto"
                           HorizontalScrollBarVisibility="Disabled">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-
-                    <!-- 设备 1 面板（COM1）-->
-                    <views:DevicePanel Grid.Column="0" DataContext="{Binding Device1}"/>
-
-                    <!-- 设备 2 面板（COM2）-->
-                    <views:DevicePanel Grid.Column="1" DataContext="{Binding Device2}"/>
-                </Grid>
+                <ItemsControl ItemsSource="{Binding AllDevices}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <UniformGrid VerticalAlignment="Top"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <views:DevicePanel DataContext="{Binding}" Margin="4"/>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
             </ScrollViewer>
         </Grid>
 
         <!-- ===== 底部日志面板 ===== -->
-        <Border Grid.Row="2" Style="{StaticResource CardStyle}" Margin="8,0,8,8" Padding="12,8">
+        <Border Grid.Row="2" Style="{StaticResource CardStyle}" Margin="8,0,8,8" Padding="12,8"
+                Visibility="{Binding IsAdvancedMode, Converter={StaticResource BoolToVisConv}}">
             <Grid Height="120">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>

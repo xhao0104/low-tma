@@ -32,6 +32,16 @@ namespace ModbusMonitor.ViewModels
         public void Execute(object? parameter) => _execute(parameter);
 
         /// <summary>
+        /// 以 Task 方式执行（供异步场景调用）
+        /// </summary>
+        public Task ExecuteAsync(object? parameter = null)
+        {
+            Execute(parameter);
+            return Task.CompletedTask;
+        }
+
+
+        /// <summary>
         /// 手动触发 CanExecute 重新评估
         /// </summary>
         public static void RaiseCanExecuteChanged()

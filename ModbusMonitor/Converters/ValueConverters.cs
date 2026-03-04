@@ -2,6 +2,8 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
+using System.Collections.ObjectModel;
+using ModbusMonitor.ViewModels;
 
 namespace ModbusMonitor.Converters
 {
@@ -126,6 +128,25 @@ namespace ModbusMonitor.Converters
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+            => throw new NotImplementedException();
+    }
+
+    /// <summary>
+    /// 将所有通道的 Devices 列表平铺为单一 IEnumerable
+    /// 供右侧 WrapPanel 统一渲染全部设备面板
+    /// </summary>
+    public class FlattenDevicesConverter : IMultiValueConverter
+    {
+        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (values is not { Length: 1 }
+                || values[0] is not ObservableCollection<ChannelViewModel> channels)
+                return Enumerable.Empty<DeviceViewModel>();
+
+            return channels.SelectMany(ch => ch.Devices).ToList();
+        }
+
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
             => throw new NotImplementedException();
     }
 }

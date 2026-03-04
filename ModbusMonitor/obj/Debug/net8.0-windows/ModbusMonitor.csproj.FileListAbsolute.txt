@@ -23,3 +23,6 @@ D:\jiedan\ModbusMonitor\ModbusMonitor\obj\Debug\net8.0-windows\refint\ModbusMoni
 D:\jiedan\ModbusMonitor\ModbusMonitor\obj\Debug\net8.0-windows\ModbusMonitor.pdb
 D:\jiedan\ModbusMonitor\ModbusMonitor\obj\Debug\net8.0-windows\ModbusMonitor.genruntimeconfig.cache
 D:\jiedan\ModbusMonitor\ModbusMonitor\obj\Debug\net8.0-windows\ref\ModbusMonitor.dll
+d:\jiedan\ModbusMonitor\ModbusMonitor\bin\Debug\net8.0-windows\settings.json
+d:\jiedan\ModbusMonitor\ModbusMonitor\obj\Debug\net8.0-windows\ModbusMonitor_Content.g.cs
+d:\jiedan\ModbusMonitor\ModbusMonitor\obj\Debug\net8.0-windows\ModbusMonitor.sourcelink.json
