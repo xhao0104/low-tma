@@ -1,5 +1,8 @@
 using System.ComponentModel;
+using System.Media;
 using System.Runtime.CompilerServices;
+using System.Timers;
+using SysTimer = System.Timers.Timer;
 using System.Windows;
 using ModbusMonitor.Models;
 using ModbusMonitor.Services;
@@ -35,6 +38,21 @@ namespace ModbusMonitor.ViewModels
             get => _deviceName;
             set => SetField(ref _deviceName, value);
         }
+
+        /// <summary>用户自定义别名（显示在简易模式卡片标题，为空时回退显示 DeviceName）</summary>
+        private string _alias = "";
+        public string Alias
+        {
+            get => _alias;
+            set
+            {
+                SetField(ref _alias, value);
+                OnPropertyChanged(nameof(DisplayName));
+            }
+        }
+
+        /// <summary>简易模式下的显示名称：有别名显示别名，没有显示原始名称</summary>
+        public string DisplayName => string.IsNullOrWhiteSpace(_alias) ? _deviceName : _alias;
 
         private int _slaveAddress = 1;
         public int SlaveAddress
@@ -78,6 +96,11 @@ namespace ModbusMonitor.ViewModels
         public RelayCommand WriteAlarmTempCommand   { get; }
         public RelayCommand WriteLightLevelCommand  { get; }
         public RelayCommand WriteAllParamsCommand   { get; }
+        /// <summary>保存别名到配置文件</summary>
+        public RelayCommand SaveAliasCommand        { get; }
+
+        /// <summary>别名变更时由外部（ChannelViewModel）传入的持久化回调</summary>
+        public Action<int, string>? OnAliasSaved { get; set; }
 
         // ===== 轮询统计 =====
         private int _pollSuccessCount;
@@ -119,6 +142,23 @@ namespace ModbusMonitor.ViewModels
         // ===== 重置统计命令 =====
         public RelayCommand ResetStatsCommand { get; }
 
+        // ===== 定时采样 =====
+        private readonly SysTimer _sampleTimer;
+
+        /// <summary>采样间隔（秒），默认 300 秒（5分钟）</summary>
+        private int _sampleIntervalSeconds = 300;
+        public int SampleIntervalSeconds
+        {
+            get => _sampleIntervalSeconds;
+            set
+            {
+                if (SetField(ref _sampleIntervalSeconds, value) && value > 0)
+                {
+                    _sampleTimer.Interval = value * 1000.0;
+                }
+            }
+        }
+
         /// <summary>
         /// 构造函数
         /// </summary>
@@ -138,9 +178,20 @@ namespace ModbusMonitor.ViewModels
             WriteLightLevelCommand  = new RelayCommand(async () => await WriteLightLevelAsync());
             WriteAllParamsCommand   = new RelayCommand(async () => await WriteAllParamsAsync());
             ResetStatsCommand       = new RelayCommand(ResetPollStats);
+            SaveAliasCommand        = new RelayCommand(() =>
+            {
+                // 通知外部（ChannelViewModel）将别名写入配置文件
+                OnAliasSaved?.Invoke(_slaveAddress, _alias ?? "");
+            });
 
             // 订阅轮询结果事件，按通道+从站地址过滤
             _modbusService.PollResult += OnPollResult;
+
+            // 初始化定时采样计时器（默认 5 分钟，到期自动记录一次温度）
+            _sampleTimer = new SysTimer(_sampleIntervalSeconds * 1000.0);
+            _sampleTimer.Elapsed  += OnSampleTimer;
+            _sampleTimer.AutoReset = true;
+            _sampleTimer.Start();
         }
 
         /// <summary>
@@ -185,6 +236,19 @@ namespace ModbusMonitor.ViewModels
             OnPropertyChanged(nameof(LastSuccessTimeText));
         }
 
+        /// <summary>定时器触发：写入一条温度快照（只有设备在线才记录）</summary>
+        private void OnSampleTimer(object? sender, ElapsedEventArgs e)
+        {
+            if (!Data.IsOnline) return;
+
+            DataLoggerService.LogSample(
+                deviceKey:   _deviceName,
+                slaveAddress: _slaveAddress,
+                temperature:  Data.Temperature,
+                alarmStatus:  Data.AlarmStatusText,
+                faultStatus:  Data.FaultStatusText);
+        }
+
         /// <summary>
         /// 更新设备数据（由轮询回调在非 UI 线程调用）
         /// </summary>
@@ -201,11 +265,21 @@ namespace ModbusMonitor.ViewModels
                 Data.WarningTemperature = newData.WarningTemperature;
                 Data.AlarmTemperature   = newData.AlarmTemperature;
                 Data.LightSensorLevel   = newData.LightSensorLevel;
+                var prevAlarm = Data.AlarmStatus;
                 Data.AlarmStatus        = newData.AlarmStatus;
                 Data.FaultStatus        = newData.FaultStatus;
                 Data.BatteryVoltage     = newData.BatteryVoltage;
                 Data.IsOnline           = newData.IsOnline;
                 Data.LastUpdate         = newData.LastUpdate;
+
+                // 报警状态发生变化时播放系统音效
+                if (newData.AlarmStatus != prevAlarm && newData.AlarmStatus > 0)
+                {
+                    if (newData.AlarmStatus == 2)
+                        SystemSounds.Hand.Play();        // 报警超高——警告音
+                    else
+                        SystemSounds.Exclamation.Play(); // 预警——提示音
+                }
             });
         }
 

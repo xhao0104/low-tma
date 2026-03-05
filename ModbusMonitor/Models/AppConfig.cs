@@ -16,6 +16,12 @@ namespace ModbusMonitor.Models
 
         /// <summary>该通道下挂载的 Modbus 从站地址列表（支持多台设备）</summary>
         public List<int> Slaves { get; set; } = new();
+
+        /// <summary>
+        /// 从站地址 → 设备别名（可选，留空则显示默认名称）
+        /// 示例 {"2": "1号配电柜", "1": "测温传感器A"}
+        /// </summary>
+        public Dictionary<string, string> SlaveAliases { get; set; } = new();
     }
 
     /// <summary>

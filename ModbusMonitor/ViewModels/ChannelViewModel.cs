@@ -71,6 +71,7 @@ namespace ModbusMonitor.ViewModels
         // ===== 外部注入的保存回调 =====
         private readonly Action _onSaveConfig;
         private readonly Action<string> _onLog;
+        private readonly ChannelConfig _config; // 保留配置引用，用于别名持久化
 
         public ChannelViewModel(
             int index,
@@ -84,6 +85,7 @@ namespace ModbusMonitor.ViewModels
             _modbusService = modbusService;
             _onSaveConfig  = onSaveConfig;
             _onLog         = onLog;
+            _config        = config;
 
             // 从配置初始化 UI 绑定值
             _name       = config.Name;
@@ -145,10 +147,11 @@ namespace ModbusMonitor.ViewModels
             int.TryParse(_portText, out int port);
             return new ChannelConfig
             {
-                Name   = _name,
-                Ip     = _ip,
-                Port   = port,
-                Slaves = ParseSlaves(_slavesText)
+                Name         = _name,
+                Ip           = _ip,
+                Port         = port,
+                Slaves       = ParseSlaves(_slavesText),
+                SlaveAliases = _config.SlaveAliases  // 保留当前所有别名
             };
         }
 
@@ -175,8 +178,27 @@ namespace ModbusMonitor.ViewModels
             // 添加新从站对应的设备
             var existing = Devices.Select(d => d.SlaveAddress).ToHashSet();
             foreach (int s in slaves)
+            {
                 if (!existing.Contains(s))
-                    Devices.Add(new DeviceViewModel(_modbusService, ChannelIndex, s, $"设备 #{s} ({_name})"));
+                {
+                    // 读取配置中保存的别名（key 为从站地址字符串）
+                    _config.SlaveAliases.TryGetValue(s.ToString(), out string? savedAlias);
+
+                    var vm = new DeviceViewModel(_modbusService, ChannelIndex, s, $"设备 #{s} ({_name})")
+                    {
+                        Alias = savedAlias ?? ""
+                    };
+
+                    // 别名保存回调：写入配置 dict 并持久化
+                    vm.OnAliasSaved = (slaveAddr, alias) =>
+                    {
+                        _config.SlaveAliases[slaveAddr.ToString()] = alias;
+                        _onSaveConfig();
+                    };
+
+                    Devices.Add(vm);
+                }
+            }
         }
 
         // ===== 事件处理 =====

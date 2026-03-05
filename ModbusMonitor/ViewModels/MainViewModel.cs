@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Windows;
 using ModbusMonitor.Models;
 using ModbusMonitor.Services;
+using ModbusMonitor.Views;
 
 namespace ModbusMonitor.ViewModels
 {
@@ -46,10 +47,11 @@ namespace ModbusMonitor.ViewModels
         }
 
         // ===== 命令 =====
-        public RelayCommand ConnectAllCommand    { get; }
-        public RelayCommand DisconnectAllCommand { get; }
-        public RelayCommand AddNewChannelCommand { get; }
-        public RelayCommand ToggleAdvancedModeCommand { get; }
+        public RelayCommand ConnectAllCommand          { get; }
+        public RelayCommand DisconnectAllCommand        { get; }
+        public RelayCommand AddNewChannelCommand        { get; }
+        public RelayCommand ToggleAdvancedModeCommand   { get; }
+        public RelayCommand OpenReportCommand           { get; }
 
         public MainViewModel()
         {
@@ -89,6 +91,19 @@ namespace ModbusMonitor.ViewModels
             DisconnectAllCommand      = new RelayCommand(() => _modbusService.DisconnectAll());
             AddNewChannelCommand      = new RelayCommand(AddNewChannel);
             ToggleAdvancedModeCommand = new RelayCommand(() => IsAdvancedMode = !IsAdvancedMode);
+            OpenReportCommand         = new RelayCommand(() =>
+            {
+                var win = new HistoryReportWindow();
+                win.Owner = Application.Current?.MainWindow;
+                win.Show();
+            });
+
+            // ===== 启动时自动连接所有通道 =====
+            _ = Task.Run(async () =>
+            {
+                await Task.Delay(500); // 等待 UI 渲染完成后再连接
+                await ConnectAllAsync();
+            });
         }
 
         // ===== 一键连接所有通道 =====

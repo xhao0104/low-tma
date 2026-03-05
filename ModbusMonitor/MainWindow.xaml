@@ -251,6 +251,15 @@
                             <LineBreak/>
                             <Run Text="配置文件: settings.json（exe 同目录）"/>
                         </TextBlock>
+
+                        <!-- 历史趋势报告入口 -->
+                        <Button Content="📊 历史趋势报告"
+                                Command="{Binding OpenReportCommand}"
+                                HorizontalAlignment="Stretch"
+                                Style="{StaticResource SmallButton}"
+                                Padding="0,8"
+                                Margin="0,16,0,0"
+                                FontSize="13"/>
                     </StackPanel>
                 </ScrollViewer>
             </Border>

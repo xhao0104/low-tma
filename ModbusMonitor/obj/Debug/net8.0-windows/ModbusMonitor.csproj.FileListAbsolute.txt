@@ -26,3 +26,10 @@ D:\jiedan\ModbusMonitor\ModbusMonitor\obj\Debug\net8.0-windows\ref\ModbusMonitor
 d:\jiedan\ModbusMonitor\ModbusMonitor\bin\Debug\net8.0-windows\settings.json
 d:\jiedan\ModbusMonitor\ModbusMonitor\obj\Debug\net8.0-windows\ModbusMonitor_Content.g.cs
 d:\jiedan\ModbusMonitor\ModbusMonitor\obj\Debug\net8.0-windows\ModbusMonitor.sourcelink.json
+d:\jiedan\ModbusMonitor\ModbusMonitor\obj\Debug\net8.0-windows\ModbusMonitor.csproj.AssemblyReference.cache
+d:\jiedan\ModbusMonitor\ModbusMonitor\obj\Debug\net8.0-windows\Views\HistoryReportWindow.g.cs
+d:\jiedan\ModbusMonitor\ModbusMonitor\bin\Debug\net8.0-windows\OxyPlot.dll
+d:\jiedan\ModbusMonitor\ModbusMonitor\bin\Debug\net8.0-windows\OxyPlot.Wpf.dll
+d:\jiedan\ModbusMonitor\ModbusMonitor\bin\Debug\net8.0-windows\OxyPlot.Wpf.Shared.dll
+d:\jiedan\ModbusMonitor\ModbusMonitor\obj\Debug\net8.0-windows\Views\HistoryReportWindow.baml
+d:\jiedan\ModbusMonitor\ModbusMonitor\obj\Debug\net8.0-windows\ModbusMo.CDAF89D5.Up2Date

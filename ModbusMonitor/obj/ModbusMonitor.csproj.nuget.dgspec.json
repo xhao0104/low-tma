@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\jiedan\\ModbusMonitor\\ModbusMonitor\\ModbusMonitor.csproj": {}
+    "d:\\jiedan\\ModbusMonitor\\ModbusMonitor\\ModbusMonitor.csproj": {}
   },
   "projects": {
-    "D:\\jiedan\\ModbusMonitor\\ModbusMonitor\\ModbusMonitor.csproj": {
+    "d:\\jiedan\\ModbusMonitor\\ModbusMonitor\\ModbusMonitor.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\jiedan\\ModbusMonitor\\ModbusMonitor\\ModbusMonitor.csproj",
+        "projectUniqueName": "d:\\jiedan\\ModbusMonitor\\ModbusMonitor\\ModbusMonitor.csproj",
         "projectName": "ModbusMonitor",
-        "projectPath": "D:\\jiedan\\ModbusMonitor\\ModbusMonitor\\ModbusMonitor.csproj",
+        "projectPath": "d:\\jiedan\\ModbusMonitor\\ModbusMonitor\\ModbusMonitor.csproj",
         "packagesPath": "C:\\Users\\xuhao\\.nuget\\packages\\",
-        "outputPath": "D:\\jiedan\\ModbusMonitor\\ModbusMonitor\\obj\\",
+        "outputPath": "d:\\jiedan\\ModbusMonitor\\ModbusMonitor\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "d:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -50,6 +50,12 @@
       "frameworks": {
         "net8.0-windows7.0": {
           "targetAlias": "net8.0-windows",
+          "dependencies": {
+            "OxyPlot.Wpf": {
+              "target": "Package",
+              "version": "[2.2.0, )"
+            }
+          },
           "imports": [
             "net461",
             "net462",

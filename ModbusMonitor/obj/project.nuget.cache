@@ -1,8 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "7lxLvOgGBc4=",
+  "dgSpecHash": "puj4Z8u2Oxs=",
   "success": true,
-  "projectFilePath": "D:\\jiedan\\ModbusMonitor\\ModbusMonitor\\ModbusMonitor.csproj",
-  "expectedPackageFiles": [],
+  "projectFilePath": "d:\\jiedan\\ModbusMonitor\\ModbusMonitor\\ModbusMonitor.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\xuhao\\.nuget\\packages\\oxyplot.core\\2.2.0\\oxyplot.core.2.2.0.nupkg.sha512",
+    "C:\\Users\\xuhao\\.nuget\\packages\\oxyplot.wpf\\2.2.0\\oxyplot.wpf.2.2.0.nupkg.sha512",
+    "C:\\Users\\xuhao\\.nuget\\packages\\oxyplot.wpf.shared\\2.2.0\\oxyplot.wpf.shared.2.2.0.nupkg.sha512"
+  ],
   "logs": []
 }

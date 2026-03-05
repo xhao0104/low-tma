@@ -4,17 +4,17 @@
 winexe
 C#
 .cs
-D:\jiedan\ModbusMonitor\ModbusMonitor\obj\Debug\net8.0-windows\
+d:\jiedan\ModbusMonitor\ModbusMonitor\obj\Debug\net8.0-windows\
 ModbusMonitor
 none
 false
 TRACE;DEBUG;NET;NET8_0;NETCOREAPP;WINDOWS;WINDOWS7_0;NET5_0_OR_GREATER;NET6_0_OR_GREATER;NET7_0_OR_GREATER;NET8_0_OR_GREATER;NETCOREAPP3_0_OR_GREATER;NETCOREAPP3_1_OR_GREATER;WINDOWS7_0_OR_GREATER
-D:\jiedan\ModbusMonitor\ModbusMonitor\App.xaml
-3435748055
+d:\jiedan\ModbusMonitor\ModbusMonitor\App.xaml
+4-399617140
 1-437179427
-152118281259
-198-2136442823
-MainWindow.xaml;Themes\DarkIndustrial.xaml;Views\DevicePanel.xaml;
+18-1139866457
+201614368309
+MainWindow.xaml;Themes\DarkIndustrial.xaml;Views\DevicePanel.xaml;Views\HistoryReportWindow.xaml;
 
 False
 

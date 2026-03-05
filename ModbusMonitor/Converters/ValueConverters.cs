@@ -110,24 +110,29 @@ namespace ModbusMonitor.Converters
     }
 
     /// <summary>
-    /// 温度值 → 颜色转换器（根据温度高低显示不同颜色）
+    /// 温度值 → 颜色转换器（严格按设备自身的预警/报警阈值显示颜色）
+    /// values[0]=Temperature, values[1]=WarningTemperature, values[2]=AlarmTemperature
     /// </summary>
-    public class TemperatureToColorConverter : IValueConverter
+    public class TemperatureToColorConverter : IMultiValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
-            double temp = value is double d ? d : 0;
-            if (temp < 40)
-                return new SolidColorBrush(Color.FromRgb(0x00, 0xA8, 0xFF)); // 蓝色 —— 正常偏低
-            else if (temp < 55)
-                return new SolidColorBrush(Color.FromRgb(0x00, 0xE6, 0x76)); // 绿色 —— 正常
-            else if (temp < 65)
-                return new SolidColorBrush(Color.FromRgb(0xFF, 0xC1, 0x07)); // 黄色 —— 偏高
-            else
-                return new SolidColorBrush(Color.FromRgb(0xFF, 0x35, 0x35)); // 红色 —— 过高
+            double temp    = values.Length > 0 && values[0] is double t ? t : 0;
+            double warning = values.Length > 1 && values[1] is int w    ? w : 999;
+            double alarm   = values.Length > 2 && values[2] is int a    ? a : 999;
+
+            // 阈值均为 0：设备未连接 / 数据未初始化，显示灰色
+            if (warning == 0 && alarm == 0)
+                return new SolidColorBrush(Color.FromRgb(0x66, 0x77, 0x88));
+
+            if (temp >= alarm && alarm > 0)
+                return new SolidColorBrush(Color.FromRgb(0xFF, 0x35, 0x35));  // 红色 —— 达到报警温度
+            if (temp >= warning && warning > 0)
+                return new SolidColorBrush(Color.FromRgb(0xFF, 0xC1, 0x07));  // 黄色 —— 达到预警温度
+            return new SolidColorBrush(Color.FromRgb(0x00, 0xE6, 0x76));      // 绿色 —— 正常范围
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
             => throw new NotImplementedException();
     }
 
