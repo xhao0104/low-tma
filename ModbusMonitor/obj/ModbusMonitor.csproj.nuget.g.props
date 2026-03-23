@@ -13,7 +13,11 @@
     <SourceRoot Include="C:\Users\xuhao\.nuget\packages\" />
     <SourceRoot Include="d:\Program Files (x86)\Microsoft Visual Studio\Shared\NuGetPackages\" />
   </ItemGroup>
+  <ImportGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
+    <Import Project="$(NuGetPackageRoot)microsoft.net.illink.tasks\8.0.19\build\Microsoft.NET.ILLink.Tasks.props" Condition="Exists('$(NuGetPackageRoot)microsoft.net.illink.tasks\8.0.19\build\Microsoft.NET.ILLink.Tasks.props')" />
+  </ImportGroup>
   <PropertyGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
     <PkgOxyPlot_Wpf Condition=" '$(PkgOxyPlot_Wpf)' == '' ">C:\Users\xuhao\.nuget\packages\oxyplot.wpf\2.2.0</PkgOxyPlot_Wpf>
+    <PkgMicrosoft_NET_ILLink_Tasks Condition=" '$(PkgMicrosoft_NET_ILLink_Tasks)' == '' ">C:\Users\xuhao\.nuget\packages\microsoft.net.illink.tasks\8.0.19</PkgMicrosoft_NET_ILLink_Tasks>
   </PropertyGroup>
 </Project>

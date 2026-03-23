@@ -331,6 +331,18 @@
                         </StackPanel>
                     </DockPanel>
 
+                    <!-- 从站地址写入 -->
+                    <DockPanel Margin="0,0,0,6">
+                        <Button DockPanel.Dock="Right" Content="写入" 
+                                Style="{StaticResource SmallButton}" Margin="6,0,0,0"
+                                Command="{Binding WriteSlaveAddressCommand}"/>
+                        <StackPanel>
+                            <TextBlock Text="从站地址 (1-247)" Style="{StaticResource LabelStyle}"/>
+                            <TextBox Style="{StaticResource DarkTextBox}"
+                                     Text="{Binding InputSlaveAddress, UpdateSourceTrigger=PropertyChanged}"/>
+                        </StackPanel>
+                    </DockPanel>
+
                     <!-- 预警温度写入 -->
                     <DockPanel Margin="0,0,0,6">
                         <Button DockPanel.Dock="Right" Content="写入" 

@@ -20,6 +20,10 @@
         <converters:BoolToVisibilityConverter      x:Key="BoolToVisConv"/>
     </Window.Resources>
 
+    <Window.InputBindings>
+        <KeyBinding Key="L" Modifiers="Ctrl" Command="{Binding ShowAdvancedLoginCommand}"/>
+    </Window.InputBindings>
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -65,42 +69,7 @@
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
 
-                    <ToggleButton IsChecked="{Binding IsAdvancedMode}"
-                                  Content="⚙️ 高级调试模式"
-                                  Padding="12,6" FontSize="12" FontWeight="Bold"
-                                  Cursor="Hand">
-                        <ToggleButton.Style>
-                            <Style TargetType="ToggleButton">
-                                <Setter Property="Background" Value="Transparent"/>
-                                <Setter Property="Foreground" Value="{StaticResource TextMutedBrush}"/>
-                                <Setter Property="BorderBrush" Value="{StaticResource CardBorderBrush}"/>
-                                <Setter Property="BorderThickness" Value="1"/>
-                                <Setter Property="Template">
-                                    <Setter.Value>
-                                        <ControlTemplate TargetType="ToggleButton">
-                                            <Border Background="{TemplateBinding Background}"
-                                                    BorderBrush="{TemplateBinding BorderBrush}"
-                                                    BorderThickness="{TemplateBinding BorderThickness}"
-                                                    CornerRadius="4">
-                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="{TemplateBinding Padding}"/>
-                                            </Border>
-                                        </ControlTemplate>
-                                    </Setter.Value>
-                                </Setter>
-                                <Style.Triggers>
-                                    <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="Background" Value="#2A3A5A"/>
-                                    </Trigger>
-                                    <Trigger Property="IsChecked" Value="True">
-                                        <Setter Property="Background" Value="#FF00A8FF"/>
-                                        <Setter Property="Foreground" Value="White"/>
-                                        <Setter Property="BorderThickness" Value="0"/>
-                                        <Setter Property="Content" Value="👀 退出调试模式"/>
-                                    </Trigger>
-                                </Style.Triggers>
-                            </Style>
-                        </ToggleButton.Style>
-                    </ToggleButton>
+                    <!-- 高级模式按钮已隐藏，改为全局快捷键 Ctrl+Shift+F12 触发 -->
                 </StackPanel>
             </DockPanel>
         </Border>

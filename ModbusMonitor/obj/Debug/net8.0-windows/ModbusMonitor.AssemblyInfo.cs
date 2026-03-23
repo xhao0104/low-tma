@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ModbusMonitor")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b5b98771d0b0714f594a542e33e66ccef73bbb5f")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+192b5f97fb2610cebe28267bd6c6cd380872bd2d")]
 [assembly: System.Reflection.AssemblyProductAttribute("ModbusMonitor")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ModbusMonitor")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

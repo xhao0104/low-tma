@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "d:\\jiedan\\ModbusMonitor\\ModbusMonitor\\ModbusMonitor.csproj": {}
+    "D:\\jiedan\\ModbusMonitor\\ModbusMonitor\\ModbusMonitor.csproj": {}
   },
   "projects": {
-    "d:\\jiedan\\ModbusMonitor\\ModbusMonitor\\ModbusMonitor.csproj": {
+    "D:\\jiedan\\ModbusMonitor\\ModbusMonitor\\ModbusMonitor.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "d:\\jiedan\\ModbusMonitor\\ModbusMonitor\\ModbusMonitor.csproj",
+        "projectUniqueName": "D:\\jiedan\\ModbusMonitor\\ModbusMonitor\\ModbusMonitor.csproj",
         "projectName": "ModbusMonitor",
-        "projectPath": "d:\\jiedan\\ModbusMonitor\\ModbusMonitor\\ModbusMonitor.csproj",
+        "projectPath": "D:\\jiedan\\ModbusMonitor\\ModbusMonitor\\ModbusMonitor.csproj",
         "packagesPath": "C:\\Users\\xuhao\\.nuget\\packages\\",
-        "outputPath": "d:\\jiedan\\ModbusMonitor\\ModbusMonitor\\obj\\",
+        "outputPath": "D:\\jiedan\\ModbusMonitor\\ModbusMonitor\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "d:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -51,6 +51,12 @@
         "net8.0-windows7.0": {
           "targetAlias": "net8.0-windows",
           "dependencies": {
+            "Microsoft.NET.ILLink.Tasks": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[8.0.19, )",
+              "autoReferenced": true
+            },
             "OxyPlot.Wpf": {
               "target": "Package",
               "version": "[2.2.0, )"
@@ -67,6 +73,20 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Runtime.win-x64",
+              "version": "[8.0.19, 8.0.19]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Runtime.win-x64",
+              "version": "[8.0.19, 8.0.19]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Runtime.win-x64",
+              "version": "[8.0.19, 8.0.19]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
@@ -76,6 +96,11 @@
             }
           },
           "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.304/PortableRuntimeIdentifierGraph.json"
+        }
+      },
+      "runtimes": {
+        "win-x64": {
+          "#import": []
         }
       }
     }

@@ -91,10 +91,18 @@ namespace ModbusMonitor.ViewModels
             set => SetField(ref _inputLightLevel, value);
         }
 
+        private string _inputSlaveAddress = "";
+        public string InputSlaveAddress
+        {
+            get => _inputSlaveAddress;
+            set => SetField(ref _inputSlaveAddress, value);
+        }
+
         // ===== 写入命令 =====
         public RelayCommand WriteWarningTempCommand { get; }
         public RelayCommand WriteAlarmTempCommand   { get; }
         public RelayCommand WriteLightLevelCommand  { get; }
+        public RelayCommand WriteSlaveAddressCommand{ get; }
         public RelayCommand WriteAllParamsCommand   { get; }
         /// <summary>保存别名到配置文件</summary>
         public RelayCommand SaveAliasCommand        { get; }
@@ -176,6 +184,7 @@ namespace ModbusMonitor.ViewModels
             WriteWarningTempCommand = new RelayCommand(async () => await WriteWarningTempAsync());
             WriteAlarmTempCommand   = new RelayCommand(async () => await WriteAlarmTempAsync());
             WriteLightLevelCommand  = new RelayCommand(async () => await WriteLightLevelAsync());
+            WriteSlaveAddressCommand= new RelayCommand(async () => await WriteSlaveAddressAsync());
             WriteAllParamsCommand   = new RelayCommand(async () => await WriteAllParamsAsync());
             ResetStatsCommand       = new RelayCommand(ResetPollStats);
             SaveAliasCommand        = new RelayCommand(() =>
@@ -202,7 +211,7 @@ namespace ModbusMonitor.ViewModels
             // 只处理属于本设备通道 + 从站地址的结果
             if (channel != _channel || slaveAddr != _slaveAddress) return;
 
-            Application.Current?.Dispatcher.Invoke(() =>
+            Application.Current?.Dispatcher.BeginInvoke(new Action(() =>
             {
                 if (success)
                 {
@@ -221,7 +230,7 @@ namespace ModbusMonitor.ViewModels
                 // 每次都刷新摘要文本
                 OnPropertyChanged(nameof(PollSummaryText));
                 OnPropertyChanged(nameof(HasRecentSuccess));
-            });
+            }));
         }
 
         /// <summary>重置轮询统计计数</summary>
@@ -254,7 +263,7 @@ namespace ModbusMonitor.ViewModels
         /// </summary>
         public void UpdateData(DeviceData newData)
         {
-            Application.Current?.Dispatcher.Invoke(() =>
+            Application.Current?.Dispatcher.BeginInvoke(new Action(() =>
             {
                 Data.BaudRate           = newData.BaudRate;
                 Data.SlaveAddress       = newData.SlaveAddress;
@@ -280,7 +289,7 @@ namespace ModbusMonitor.ViewModels
                     else
                         SystemSounds.Exclamation.Play(); // 预警——提示音
                 }
-            });
+            }));
         }
 
         // ===== 写入操作（均通过对应通道发送）=====
@@ -304,6 +313,32 @@ namespace ModbusMonitor.ViewModels
         {
             if (ushort.TryParse(InputLightLevel, out ushort value) && value >= 1 && value <= 3)
                 await _modbusService.WriteSingleRegisterAsync(_channel, (byte)SlaveAddress, 0x0009, value);
+        }
+
+        /// <summary>从站地址修改成功触发，参数为 (旧地址, 新地址)</summary>
+        public Action<int, int>? OnSlaveAddressChanged { get; set; }
+
+        /// <summary>写入从站地址 —— 寄存器 40002（地址 0x0001），有效值 1~247</summary>
+        private async Task WriteSlaveAddressAsync()
+        {
+            if (ushort.TryParse(InputSlaveAddress, out ushort value) && value >= 1 && value <= 247 && value != SlaveAddress)
+            {
+                int oldAddress = SlaveAddress;
+                bool success = await _modbusService.WriteSingleRegisterAsync(_channel, (byte)oldAddress, 0x0001, value);
+                if (success)
+                {
+                    Application.Current?.Dispatcher.BeginInvoke(new Action(() =>
+                    {
+                        var result = MessageBox.Show($"修改成功！设备的从站地址已从 {oldAddress} 变更为 {value}。\n\n是否允许上位机自动更新本通道的配置并重新连接？\n\n（如果选择“否”，则您需要在接下来的通信前手动对左侧列表的配置项做出修改。）", 
+                            "地址修改成功", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                        
+                        if (result == MessageBoxResult.Yes)
+                        {
+                            OnSlaveAddressChanged?.Invoke(oldAddress, value);
+                        }
+                    }));
+                }
+            }
         }
 
         /// <summary>一键写入所有参数</summary>

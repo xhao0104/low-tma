@@ -1,12 +1,16 @@
 {
   "version": 2,
-  "dgSpecHash": "puj4Z8u2Oxs=",
+  "dgSpecHash": "mmzr4j/SzHU=",
   "success": true,
-  "projectFilePath": "d:\\jiedan\\ModbusMonitor\\ModbusMonitor\\ModbusMonitor.csproj",
+  "projectFilePath": "D:\\jiedan\\ModbusMonitor\\ModbusMonitor\\ModbusMonitor.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\xuhao\\.nuget\\packages\\microsoft.net.illink.tasks\\8.0.19\\microsoft.net.illink.tasks.8.0.19.nupkg.sha512",
     "C:\\Users\\xuhao\\.nuget\\packages\\oxyplot.core\\2.2.0\\oxyplot.core.2.2.0.nupkg.sha512",
     "C:\\Users\\xuhao\\.nuget\\packages\\oxyplot.wpf\\2.2.0\\oxyplot.wpf.2.2.0.nupkg.sha512",
-    "C:\\Users\\xuhao\\.nuget\\packages\\oxyplot.wpf.shared\\2.2.0\\oxyplot.wpf.shared.2.2.0.nupkg.sha512"
+    "C:\\Users\\xuhao\\.nuget\\packages\\oxyplot.wpf.shared\\2.2.0\\oxyplot.wpf.shared.2.2.0.nupkg.sha512",
+    "C:\\Users\\xuhao\\.nuget\\packages\\microsoft.netcore.app.runtime.win-x64\\8.0.19\\microsoft.netcore.app.runtime.win-x64.8.0.19.nupkg.sha512",
+    "C:\\Users\\xuhao\\.nuget\\packages\\microsoft.windowsdesktop.app.runtime.win-x64\\8.0.19\\microsoft.windowsdesktop.app.runtime.win-x64.8.0.19.nupkg.sha512",
+    "C:\\Users\\xuhao\\.nuget\\packages\\microsoft.aspnetcore.app.runtime.win-x64\\8.0.19\\microsoft.aspnetcore.app.runtime.win-x64.8.0.19.nupkg.sha512"
   ],
   "logs": []
 }

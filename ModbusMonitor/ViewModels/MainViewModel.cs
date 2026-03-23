@@ -50,7 +50,7 @@ namespace ModbusMonitor.ViewModels
         public RelayCommand ConnectAllCommand          { get; }
         public RelayCommand DisconnectAllCommand        { get; }
         public RelayCommand AddNewChannelCommand        { get; }
-        public RelayCommand ToggleAdvancedModeCommand   { get; }
+        public RelayCommand ShowAdvancedLoginCommand    { get; }
         public RelayCommand OpenReportCommand           { get; }
 
         public MainViewModel()
@@ -90,7 +90,7 @@ namespace ModbusMonitor.ViewModels
             ConnectAllCommand         = new RelayCommand(async () => await ConnectAllAsync());
             DisconnectAllCommand      = new RelayCommand(() => _modbusService.DisconnectAll());
             AddNewChannelCommand      = new RelayCommand(AddNewChannel);
-            ToggleAdvancedModeCommand = new RelayCommand(() => IsAdvancedMode = !IsAdvancedMode);
+            ShowAdvancedLoginCommand  = new RelayCommand(ShowAdvancedLogin);
             OpenReportCommand         = new RelayCommand(() =>
             {
                 var win = new HistoryReportWindow();
@@ -103,6 +103,29 @@ namespace ModbusMonitor.ViewModels
             {
                 await Task.Delay(500); // 等待 UI 渲染完成后再连接
                 await ConnectAllAsync();
+            });
+        }
+
+        // ===== 高级调试模式登录验证 =====
+        private void ShowAdvancedLogin()
+        {
+            if (IsAdvancedMode)
+            {
+                IsAdvancedMode = false;
+                AddLog("👀 已退出高级调试模式，恢复现场人员视图。");
+                return;
+            }
+
+            // 因为 MainViewModel 不能直接依赖视图逻辑，但 WPF 允许借用 dispatcher，
+            // 为了安全，可以直接创建 PasswordDialog。
+            Application.Current?.Dispatcher.Invoke(() =>
+            {
+                var dialog = new PasswordDialog(_appConfig.AdminPassword) { Owner = Application.Current.MainWindow };
+                if (dialog.ShowDialog() == true && dialog.IsAuthenticated)
+                {
+                    IsAdvancedMode = true;
+                    AddLog("🔒 验证通过，已进入高级调试模式。");
+                }
             });
         }
 
@@ -125,13 +148,13 @@ namespace ModbusMonitor.ViewModels
             
             ch.Devices.CollectionChanged += (s, e) =>
             {
-                Application.Current?.Dispatcher.Invoke(() =>
+                Application.Current?.Dispatcher.BeginInvoke(new Action(() =>
                 {
                     if (e.NewItems != null)
                         foreach (DeviceViewModel d in e.NewItems) AllDevices.Add(d);
                     if (e.OldItems != null)
                         foreach (DeviceViewModel d in e.OldItems) AllDevices.Remove(d);
-                });
+                }));
             };
         }
 
@@ -192,15 +215,19 @@ namespace ModbusMonitor.ViewModels
         // ===== 日志 =====
         private void AddLog(string message)
         {
-            Application.Current?.Dispatcher.Invoke(() =>
+            Application.Current?.Dispatcher.BeginInvoke(new Action(() =>
             {
                 LogEntries.Insert(0, $"[{DateTime.Now:HH:mm:ss}] {message}");
                 while (LogEntries.Count > 200)
                     LogEntries.RemoveAt(LogEntries.Count - 1);
-            });
+            }));
         }
 
         /// <summary>释放资源（窗口关闭时调用）</summary>
-        public void Cleanup() => _modbusService.Dispose();
+        public void Cleanup()
+        {
+            SaveConfig();
+            _modbusService.Dispose();
+        }
     }
 }

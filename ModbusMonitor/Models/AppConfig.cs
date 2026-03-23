@@ -29,6 +29,9 @@ namespace ModbusMonitor.Models
     /// </summary>
     public class AppConfig
     {
+        /// <summary>高级调试模式授权密码（可由实施人员修改）</summary>
+        public string AdminPassword { get; set; } = "888888";
+
         /// <summary>所有通道配置</summary>
         public List<ChannelConfig> Channels { get; set; } = new();
     }

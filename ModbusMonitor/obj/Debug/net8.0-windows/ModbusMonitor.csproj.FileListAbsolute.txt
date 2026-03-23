@@ -33,3 +33,5 @@ d:\jiedan\ModbusMonitor\ModbusMonitor\bin\Debug\net8.0-windows\OxyPlot.Wpf.dll
 d:\jiedan\ModbusMonitor\ModbusMonitor\bin\Debug\net8.0-windows\OxyPlot.Wpf.Shared.dll
 d:\jiedan\ModbusMonitor\ModbusMonitor\obj\Debug\net8.0-windows\Views\HistoryReportWindow.baml
 d:\jiedan\ModbusMonitor\ModbusMonitor\obj\Debug\net8.0-windows\ModbusMo.CDAF89D5.Up2Date
+d:\jiedan\ModbusMonitor\ModbusMonitor\obj\Debug\net8.0-windows\Views\PasswordDialog.baml
+d:\jiedan\ModbusMonitor\ModbusMonitor\obj\Debug\net8.0-windows\Views\PasswordDialog.g.cs

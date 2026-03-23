@@ -196,6 +196,37 @@ namespace ModbusMonitor.ViewModels
                         _onSaveConfig();
                     };
 
+                    // 从站地址修改回调：更新通道配置并尝试重连以应用新地址
+                    vm.OnSlaveAddressChanged = (oldAddr, newAddr) =>
+                    {
+                        Application.Current?.Dispatcher.BeginInvoke(new Action(async () =>
+                        {
+                            var slavesList = ParseSlaves(SlavesText);
+                            for (int i = 0; i < slavesList.Count; i++)
+                            {
+                                if (slavesList[i] == oldAddr)
+                                    slavesList[i] = newAddr;
+                            }
+                            SlavesText = string.Join(",", slavesList.Distinct());
+                            
+                            // 迁移可能存在的别名记录
+                            if (_config.SlaveAliases.TryGetValue(oldAddr.ToString(), out var oldAlias))
+                            {
+                                _config.SlaveAliases.Remove(oldAddr.ToString());
+                                _config.SlaveAliases[newAddr.ToString()] = oldAlias;
+                            }
+
+                            SaveConfig();
+
+                            if (Connected)
+                            {
+                                await ToggleAsync(); // 断开连接
+                                await Task.Delay(500); // 稍作等待给设备处理时间和界面断开反应时间
+                                await ToggleAsync(); // 重新连接
+                            }
+                        }));
+                    };
+
                     Devices.Add(vm);
                 }
             }
@@ -206,12 +237,12 @@ namespace ModbusMonitor.ViewModels
         private void OnChannelConnectionChanged(int channel, bool connected)
         {
             if (channel != ChannelIndex) return;
-            Application.Current?.Dispatcher.Invoke(() =>
+            Application.Current?.Dispatcher.BeginInvoke(new Action(() =>
             {
                 Connected = connected;
                 if (!connected)
                     foreach (var d in Devices) d.Data.IsOnline = false;
-            });
+            }));
         }
 
         private void OnDataReceived(int slaveAddr, DeviceData data)
